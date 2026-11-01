@@ -2754,32 +2754,28 @@
       let proofNotice = customerUploadedProof ? `\n📷 *Screenshot:* Attached by Customer` : '';
       let gstinNotice = storeConfig.gstin ? `\n🏛️ *Store GSTIN:* ${storeConfig.gstin}` : '';
       
-      const ownerAlertMsg = encodeURIComponent(
-        `🚨 *NEW VERIFIED ORDER: ${activeOrderId}*\n\n` +
-        `👤 *Customer:* ${name}\n` +
-        `📞 *Phone:* ${phone}\n` +
-        `📍 *Delivery Address:* ${addr}\n\n` +
-        `🛍️ *Ordered Pieces:*\n${itemsSummary}\n\n` +
-        `💰 *Subtotal:* ₹${subtotal}\n` +
-        `🎁 *Discount Cut:* -₹${discountCut}\n` +
-        `💵 *Net Amount:* ₹${finalTotal}\n` +
-        `💳 *Payment Mode:* ${payModeText}${utrNotice}${proofNotice}${gstinNotice}\n` +
-        `📋 *Status:* Confirmed & Logged${restockText}\n\n` +
-        `_JSR OM JEWELS Luxury Order Desk_`
-      );
+              // --- AUTOMATIC TELEGRAM ORDER ALERT ---
+        const tgMsg = `🚨 *NEW VERIFIED ORDER: ${activeOrderId}*\n\n` +
+                      `👤 *Customer:* ${name}\n` +
+                      `📞 *Phone:* ${phone}\n` +
+                      `📍 *Delivery Address:* ${addr}\n\n` +
+                      `🛍️ *Ordered Pieces:*\n${itemsSummary}\n\n` +
+                      `💰 *Subtotal:* ₹${subtotal}\n` +
+                      `🎁 *Discount Cut:* -₹${discountCut}\n` +
+                      `💵 *Net Amount:* ₹${finalTotal}\n` +
+                      `💳 *Payment Mode:* ${payModeText}${utrNotice}${proofNotice}${gstinNotice}\n` +
+                      `📋 *Status:* Confirmed & Logged${restockText}\n\n` +
+                      `_JSR OM JEWELS Luxury Order Desk_`;
 
-      const targetPhone = cleanPhoneNumber(storeConfig.phone);
-      const whatsappUrl = `https://wa.me/91${targetPhone}?text=${ownerAlertMsg}`;
-
-      const manualBtn = document.getElementById("btnManualSendWhatsApp");
-      if (manualBtn) manualBtn.href = whatsappUrl;
-
-      try {
-        const win = window.open(whatsappUrl, '_blank');
-        if (!win) {
-          console.log("Popup blocked by browser; user can click the manual button.");
-        }
-      } catch(e) {}
+        fetch(`https://api.telegram.org/bot9238756691:AAEtcjiipZsQiBPFvyEhLeIX4qs6Whyfgig/sendMessage`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                chat_id: '8460520175',
+                text: tgMsg,
+                parse_mode: 'Markdown'
+            })
+        }).catch(err => console.log('Telegram Alert Error:', err));
 
       document.getElementById("invNo").innerText = `#${activeOrderId}`;
       document.getElementById("invDate").innerText = new Date().toLocaleDateString('en-GB');
