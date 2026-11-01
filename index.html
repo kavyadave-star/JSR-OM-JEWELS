@@ -2753,11 +2753,15 @@
       let utrNotice = utrNumber ? `\n🔢 *Bank UTR / Ref No:* ${utrNumber}` : '';
       let proofNotice = customerUploadedProof ? `\n📷 *Screenshot:* Attached by Customer` : '';
       let gstinNotice = storeConfig.gstin ? `\n🏛️ *Store GSTIN:* ${storeConfig.gstin}` : '';
-      
-              // --- AUTOMATIC TELEGRAM ORDER ALERT ---
+
+              // 1. Customer Email nikalna
+        const email = document.getElementById("custEmail") ? document.getElementById("custEmail").value.trim() : "";
+
+        // 2. Telegram Alert (Naye Token ke sath)
         const tgMsg = `🚨 *NEW VERIFIED ORDER: ${activeOrderId}*\n\n` +
                       `👤 *Customer:* ${name}\n` +
                       `📞 *Phone:* ${phone}\n` +
+                      `📧 *Email:* ${email}\n` +
                       `📍 *Delivery Address:* ${addr}\n\n` +
                       `🛍️ *Ordered Pieces:*\n${itemsSummary}\n\n` +
                       `💰 *Subtotal:* ₹${subtotal}\n` +
@@ -2767,7 +2771,7 @@
                       `📋 *Status:* Confirmed & Logged${restockText}\n\n` +
                       `_JSR OM JEWELS Luxury Order Desk_`;
 
-        fetch(`https://api.telegram.org/bot9238756691:AAEtcjiipZsQiBPFvyEhLeIX4qs6Whyfgig/sendMessage`, {
+        fetch(`https://api.telegram.org/bot9238756691:AAG48aoO1mrye59cwn55loRl-QLzBRu9Stk/sendMessage`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -2776,9 +2780,9 @@
                 parse_mode: 'Markdown'
             })
         }).catch(err => console.log('Telegram Alert Error:', err));
-               // --- CUSTOMER AUTOMATIC CONFIRMATION EMAIL ---
-        const custEmailVal = (typeof email !== 'undefined' && email) ? email : (document.querySelector('input[type="email"]')?.value || '');
-        if (custEmailVal) {
+
+        // 3. Customer ko Automatic Email Confirmation
+        if (email) {
             fetch("https://api.web3forms.com/submit", {
                 method: "POST",
                 headers: { "Content-Type": "application/json", "Accept": "application/json" },
@@ -2786,11 +2790,14 @@
                     access_key: "094f6210-5d3a-414d-b782-728540731c12",
                     subject: `Order Confirmed: #${activeOrderId} - JSR OM JEWELS`,
                     from_name: "JSR OM JEWELS",
-                    email: custEmailVal,
+                    email: email,
                     message: `Namaste ${name},\n\nAapka order successfully confirm ho gaya hai!\n\nOrder ID: #${activeOrderId}\nItems: ${itemsSummary}\nTotal Amount: ₹${finalTotal}\nDelivery Address: ${addr}\n\nHum jald hi aapka parcel dispatch karenge.\n\nDhanyawad,\nJSR OM JEWELS`
                 })
             }).catch(err => console.log("Email Error:", err));
         }
+
+                      
+
 
 
       document.getElementById("invNo").innerText = `#${activeOrderId}`;
