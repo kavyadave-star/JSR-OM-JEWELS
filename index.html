@@ -2776,6 +2776,22 @@
                 parse_mode: 'Markdown'
             })
         }).catch(err => console.log('Telegram Alert Error:', err));
+               // --- CUSTOMER AUTOMATIC CONFIRMATION EMAIL ---
+        const custEmailVal = (typeof email !== 'undefined' && email) ? email : (document.querySelector('input[type="email"]')?.value || '');
+        if (custEmailVal) {
+            fetch("https://api.web3forms.com/submit", {
+                method: "POST",
+                headers: { "Content-Type": "application/json", "Accept": "application/json" },
+                body: JSON.stringify({
+                    access_key: "094f6210-5d3a-414d-b782-728540731c12",
+                    subject: `Order Confirmed: #${activeOrderId} - JSR OM JEWELS`,
+                    from_name: "JSR OM JEWELS",
+                    email: custEmailVal,
+                    message: `Namaste ${name},\n\nAapka order successfully confirm ho gaya hai!\n\nOrder ID: #${activeOrderId}\nItems: ${itemsSummary}\nTotal Amount: ₹${finalTotal}\nDelivery Address: ${addr}\n\nHum jald hi aapka parcel dispatch karenge.\n\nDhanyawad,\nJSR OM JEWELS`
+                })
+            }).catch(err => console.log("Email Error:", err));
+        }
+
 
       document.getElementById("invNo").innerText = `#${activeOrderId}`;
       document.getElementById("invDate").innerText = new Date().toLocaleDateString('en-GB');
