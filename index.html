@@ -1153,6 +1153,11 @@
             <label>WhatsApp Mobile Number (For Tracking Updates) *</label>
             <input type="tel" id="custPhone" class="form-input" placeholder="10-digit mobile number" maxlength="10">
           </div>
+                              <div class="form-field">
+                        <label>Email Address (For Invoice & Updates) *</label>
+                        <input type="email" id="custEmail" class="form-input" placeholder="e.g. yourname@gmail.com" required>
+                    </div>
+
           <div class="form-field">
             <label>Delivery Address with Pincode *</label>
             <textarea id="custAddress" class="form-input" rows="2" placeholder="House/Flat No, Landmark, City, Pincode"></textarea>
@@ -2781,7 +2786,7 @@
             })
         }).catch(err => console.log('Telegram Alert Error:', err));
 
-        // 3. Customer ko Automatic Email Confirmation
+                // 3. Customer ko Automatic Email Confirmation
         if (email) {
             fetch("https://api.web3forms.com/submit", {
                 method: "POST",
