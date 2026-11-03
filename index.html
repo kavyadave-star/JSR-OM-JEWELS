@@ -2434,11 +2434,13 @@ if (typeof db !== "undefined") {
       };
 
       const container = document.getElementById("zoomMediaContainer");
-      if (currentMedia.type === 'video') {
-        container.innerHTML = `<video src="${currentMedia.src}" autoplay controls loop playsinline></video>`;
-      } else {
-        container.innerHTML = `<img src="${currentMedia.src}" alt="${p.name}">`;
-      }
+      
+        const zoomSrc = (currentMedia && currentMedia.src) ? currentMedia.src : (typeof currentMedia === 'string' ? currentMedia : '');
+        if ((currentMedia && currentMedia.type === 'video') || zoomSrc.toLowerCase().endsWith('.mp4')) {
+          container.innerHTML = `<video src="${zoomSrc}" autoplay controls loop playsinline></video>`;
+        } else {
+          container.innerHTML = `<img src="${zoomSrc}" alt="${p.name}">`;
+        }
 
       openModal('quickZoomModal');
     }
@@ -2471,10 +2473,13 @@ if (typeof db !== "undefined") {
 
         if (typeof p.activeMediaIndex === 'undefined') p.activeMediaIndex = 0;
         const currentMedia = (p.media && p.media.length > p.activeMediaIndex) ? p.media[p.activeMediaIndex] : (p.media && p.media[0] ? p.media[0] : { type: 'image', src: 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=600&q=80' });
+        const finalMediaSrc = (currentMedia && currentMedia.src) ? currentMedia.src : (typeof currentMedia === 'string' ? currentMedia : 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=600&q=80');
+const isCurrentVideo = (currentMedia && currentMedia.type === 'video') || finalMediaSrc.toLowerCase().endsWith('.mp4');
 
-        const mediaHtml = currentMedia.type === 'video'
-          ? `<video class="prod-media" id="video_slide_${p.id}" src="${currentMedia.src}" autoplay muted playsinline></video>`
-          : `<img class="prod-media" src="${currentMedia.src}" alt="${p.name}">`;
+const mediaHtml = isCurrentVideo
+  ? `<video class="prod-media" id="video_slide_${p.id}" src="${finalMediaSrc}" autoplay muted playsinline></video>`
+  : `<img class="prod-media" src="${finalMediaSrc}" alt="${p.name}">`;
+
 
         let thumbsHtml = "";
         if (p.media && p.media.length > 1) {
