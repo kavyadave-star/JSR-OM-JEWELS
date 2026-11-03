@@ -1936,18 +1936,34 @@ if (typeof db !== "undefined") {
   localStorage.setItem("jsr_toast_config", JSON.stringify(toastConfig));
 
   // फ़ायरबेस क्लाउड सिंक (हर यूज़र के लिए लाइव अपडेट)
-  if (typeof db !== "undefined") {
-    db.collection("storeData").doc("mainStore").set({
-      products: products,
-      categories: categories,
-      storeConfig: storeConfig,
-      festiveBannerText: festiveBannerText,
-      spotlightConfig: spotlightConfig,
-      thresholdOffer: thresholdOffer,
-      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-    }).catch(err => console.error("Firestore Save Error:", err));
+      // फ़ायरबेस क्लाउड सिंक (हर यूज़र के लिए लाइव अपडेट)
+    if (typeof db !== "undefined" && db) {
+      db.collection("storeData").doc("mainstore").set({
+        products: products,
+        categories: categories,
+        storeConfig: storeConfig,
+        festiveBannerText: festiveBannerText,
+        spotlightConfig: spotlightConfig,
+        thresholdOffer: thresholdOffer,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      }, { merge: true }).catch(err => console.error("Firestore Save Error:", err));
+    }
   }
-}
+
+    // दूसरे फ़ोन में लाइव अपडेट दिखने के लिए Realtime Listener
+    if (typeof db !== "undefined" && db) {
+    db.collection("storeData").doc("mainstore").onSnapshot((doc) => {
+      if (doc.exists) {
+        const data = doc.data();
+        if (data.products) products = data.products;
+        if (data.categories) categories = data.categories;
+        if (typeof renderCatalog === 'function') renderCatalog();
+      }
+    }, (err) => console.error("Firestore Listen Error:", err));
+  }
+
+
+
 
 
     function applyContactUpdates() {
