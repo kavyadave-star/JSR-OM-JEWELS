@@ -1571,6 +1571,8 @@
                 <label style="font-size:10px; color:var(--gold-deep); font-weight:700;">Price (₹)</label>
                 <input type="number" id="admNewPrice" placeholder="e.g. 599" class="form-input">
               </div>
+              
+
               <div style="flex:1;">
                 <label style="font-size:10px; color:var(--gold-deep); font-weight:700;">MRP (₹)</label>
                 <input type="number" id="admNewMrp" placeholder="e.g. 1199" class="form-input">
@@ -1586,7 +1588,11 @@
               <input type="file" id="admGalleryMultiInput" accept="image/*,video/mp4,video/webm" multiple class="form-input" style="padding:8px;" onchange="handleMultipleGalleryFiles(event)">
               <div id="galleryMultiDispStatus" style="font-size:10px; color:var(--accent-green); font-weight:700; margin-top:4px;"></div>
             </div>
-
+<div class="form-field" style="margin-top:10px;">
+  <label>या डायरेक्ट HD इमेज / वीडियो URL (Direct Link)</label>
+  <input type="url" id="admDirectMediaUrl" placeholder="https://.../photo.jpg या video.mp4" class="form-input" style="padding:8px; font-size:11px;">
+</div>
+            
             <button class="btn-submit" onclick="adminPublishPiece()">Publish Live Piece</button>
           </div>
 
@@ -3127,16 +3133,21 @@ if (typeof db !== "undefined") {
       if (!name || isNaN(price)) return alert("Please fill piece title and selling price!");
 
       const pieceId = Date.now();
-      let mediaList = [];
+              const directUrl = document.getElementById("admDirectMediaUrl") ? document.getElementById("admDirectMediaUrl").value.trim() : "";
+        let mediaList = [];
 
-      if (uploadedMultiMediaList.length > 0) {
-        mediaList = [...uploadedMultiMediaList];
-      } else {
-        mediaList.push({
-          type: 'image',
-          src: 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=600&q=80'
-        });
-      }
+        if (directUrl) {
+          const isVid = directUrl.toLowerCase().endsWith(".mp4") || directUrl.toLowerCase().includes("video");
+          mediaList.push({ type: isVid ? 'video' : 'image', src: directUrl });
+        } else if (uploadedMultiMediaList.length > 0) {
+          mediaList = [...uploadedMultiMediaList];
+        } else {
+          mediaList.push({
+            type: 'image',
+            src: 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=600&q=80'
+          });
+        }
+
 
       const randomSafeCounts = [280, 310, 340, 390, 420, 260];
       const randomScore = (4.7 + Math.random() * 0.2).toFixed(1);
